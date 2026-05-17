@@ -1,0 +1,277 @@
+/* ============================================================
+   style.css – letni motyw "słońce nad morzem"
+   ============================================================ */
+
+/* ── Zmienne CSS ──────────────────────────────────────────── */
+:root {
+  --sand:      #f5e6c8;   /* kolor piasku – główne tło           */
+  --ocean:     #0e7e9e;   /* głęboki błękit oceanu               */
+  --wave:      #3bbde4;   /* jasny turkus fal                    */
+  --sun:       #ffb830;   /* żółty słońca                        */
+  --sun-glow:  #ff7a00;   /* pomarańczowy poświaty               */
+  --text-dark: #1a2e3b;   /* ciemny granat – tekst               */
+  --text-mid:  #3a5a6e;   /* pośredni odcień – etykiety          */
+  --card-bg:   rgba(255, 255, 255, 0.72); /* tło karty (frosted glass) */
+
+  --font-display: "Playfair Display", Georgia, serif;
+  --font-body:    "DM Sans", sans-serif;
+
+  --radius: 2rem;
+  --shadow: 0 24px 60px rgba(14, 126, 158, 0.18);
+}
+
+/* ── Reset i podstawy ─────────────────────────────────────── */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-body);
+  color: var(--text-dark);
+
+  /* Gradient od nieba do piasku */
+  background: linear-gradient(
+    170deg,
+    #c9ecf8 0%,
+    #7fd3ef 35%,
+    #3bbde4 60%,
+    var(--sand) 100%
+  );
+
+  /* Delikatna tekstura ziarnista przez nakładkę SVG */
+  background-attachment: fixed;
+  overflow-x: hidden;
+}
+
+/* ── Fale SVG w dolnej części ekranu ─────────────────────── */
+.waves {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 220px;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.waves svg {
+  width: 100%;
+  height: 100%;
+}
+
+.waves path {
+  fill: var(--ocean);
+  opacity: 0.55;
+  /* Animacja kołysania fal */
+  animation: sway 6s ease-in-out infinite alternate;
+  transform-origin: center bottom;
+}
+
+@keyframes sway {
+  from { d: path("M0,160 C360,260 1080,60  1440,160 L1440,320 L0,320 Z"); }
+  to   { d: path("M0,120 C400,220 1040,100 1440,120 L1440,320 L0,320 Z"); }
+}
+
+/* ── Słońce ───────────────────────────────────────────────── */
+.sun {
+  position: relative;
+  width: 90px;
+  height: 90px;
+  margin: 0 auto 2rem;
+  animation: spin 20s linear infinite;
+}
+
+/* Jądro słońca */
+.sun__core {
+  position: absolute;
+  inset: 18px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 40% 35%, #ffe066, var(--sun-glow));
+  box-shadow:
+    0 0 30px 8px rgba(255,184,48, 0.6),
+    0 0 60px 16px rgba(255,122,0, 0.25);
+}
+
+/* 8 promieni generowanych pseudo-elementami i box-shadow */
+.sun::before,
+.sun::after {
+  content: "";
+  position: absolute;
+  background: var(--sun);
+  border-radius: 4px;
+}
+
+/* Poziome + pionowe promienie */
+.sun::before {
+  width: 100%; height: 12px;
+  top: 39px; left: 0;
+  box-shadow:
+    0 -32px 0 8px var(--sun),   /* góra        */
+    0  32px 0 8px var(--sun);   /* dół         */
+  border-radius: 6px;
+}
+
+.sun::after {
+  width: 12px; height: 100%;
+  left: 39px; top: 0;
+  box-shadow:
+    -32px 0 0 8px var(--sun),   /* lewo        */
+     32px 0 0 8px var(--sun);   /* prawo       */
+  border-radius: 6px;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+/* ── Karta ────────────────────────────────────────────────── */
+.card {
+  position: relative;
+  z-index: 1;
+  background: var(--card-bg);
+  backdrop-filter: blur(18px) saturate(1.4);
+  -webkit-backdrop-filter: blur(18px) saturate(1.4);
+  border: 1px solid rgba(255,255,255, 0.5);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  padding: 3rem 3.5rem 2.5rem;
+  text-align: center;
+  max-width: 680px;
+  width: 92%;
+
+  /* Pojawienie się po załadowaniu */
+  animation: rise 0.9s cubic-bezier(.22,.61,.36,1) both;
+}
+
+@keyframes rise {
+  from { opacity: 0; transform: translateY(40px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* ── Nagłówek ─────────────────────────────────────────────── */
+.headline {
+  font-family: var(--font-display);
+  font-size: clamp(1.6rem, 4.5vw, 2.6rem);
+  font-weight: 700;
+  color: var(--ocean);
+  line-height: 1.2;
+  margin-bottom: 2rem;
+  letter-spacing: -0.02em;
+  transition: color 0.6s;
+}
+
+/* Stan po nadejściu wakacji */
+.headline.started {
+  color: var(--sun-glow);
+  font-style: italic;
+  animation: pulse-glow 2s ease-in-out infinite alternate;
+}
+
+@keyframes pulse-glow {
+  from { text-shadow: 0 0 0px transparent; }
+  to   { text-shadow: 0 0 24px rgba(255,122,0, 0.5); }
+}
+
+/* ── Odliczanie ───────────────────────────────────────────── */
+.countdown {
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  gap: 0.4rem;
+  margin-bottom: 2rem;
+  transition: opacity 0.4s;
+}
+
+/* Klasa dodawana przez JS gdy wakacje się zaczęły */
+.countdown.hidden {
+  display: none;
+}
+
+/* Pojedyncza jednostka (np. "07 dni") */
+.unit {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.3rem;
+  min-width: 72px;
+}
+
+/* Duże cyfry */
+.unit__value {
+  font-family: var(--font-display);
+  font-size: clamp(2.4rem, 7vw, 3.8rem);
+  font-weight: 700;
+  color: var(--ocean);
+  line-height: 1;
+  /* Efekt zmiany cyfry */
+  transition: transform 0.15s ease, color 0.3s;
+}
+
+.unit__value:not([data-prev=""]):not([data-prev]) {
+  animation: flip 0.3s ease;
+}
+
+@keyframes flip {
+  0%   { transform: scaleY(1); }
+  50%  { transform: scaleY(0.6); opacity: 0.7; }
+  100% { transform: scaleY(1); }
+}
+
+/* Etykieta poniżej cyfr */
+.unit__label {
+  font-size: 0.7rem;
+  font-weight: 500;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--text-mid);
+}
+
+/* Dwukropek między jednostkami */
+.separator {
+  font-family: var(--font-display);
+  font-size: clamp(2rem, 6vw, 3.2rem);
+  color: var(--wave);
+  padding-top: 0.1rem;
+  user-select: none;
+  animation: blink 1s step-start infinite;
+}
+
+@keyframes blink {
+  0%, 100% { opacity: 1; }
+  50%       { opacity: 0.2; }
+}
+
+/* ── Pasek postępu ────────────────────────────────────────── */
+.progress-wrap {
+  height: 8px;
+  background: rgba(14,126,158, 0.15);
+  border-radius: 999px;
+  overflow: hidden;
+  margin-top: 0.5rem;
+}
+
+.progress-bar {
+  height: 100%;
+  width: 0%;                  /* aktualizowane przez JS */
+  background: linear-gradient(90deg, var(--wave), var(--sun));
+  border-radius: 999px;
+  transition: width 1s linear;
+}
+
+.progress-label {
+  margin-top: 0.6rem;
+  font-size: 0.78rem;
+  letter-spacing: 0.06em;
+  color: var(--text-mid);
+}
+
+/* ── Responsywność ────────────────────────────────────────── */
+@media (max-width: 480px) {
+  .card { padding: 2rem 1.5rem 2rem; }
+
+  /* Na małych ekranach zmniejszamy odstępy w liczniku */
+  .unit { min-width: 56px; }
+  .separator { padding-top: 0; }
+}
